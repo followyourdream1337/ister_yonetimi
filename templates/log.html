@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Değişiklik Logu{% endblock %}
+{% block page_title %}Değişiklik Logu{% endblock %}
+{% block page_sub %}Sistem{% endblock %}
+{% block content %}
+<div class="card">
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <select id="f-tablo" onchange="filtrele()" style="flex:1;min-width:150px;font-size:12px"><option value="">Tüm Tablolar</option><option>ister_node</option><option>test_sonuc</option><option>ta_dokuman</option><option>konfig_list</option><option>platform_list</option></select>
+    <input id="f-kul" placeholder="Kullanıcı..." oninput="filtrele()" style="flex:1;min-width:150px">
+    <input id="f-alan" placeholder="Alan..." oninput="filtrele()" style="flex:1;min-width:150px">
+  </div>
+  <table><thead><tr><th>Tarih</th><th>Tablo</th><th>Kayıt</th><th>Alan</th><th>Eski</th><th>Yeni</th><th>Kullanıcı</th></tr></thead>
+  <tbody id="tablo"></tbody></table>
+  <div id="loading" style="text-align:center;padding:20px;color:var(--text3)">Yükleniyor...</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let data=[];
+fetch('/api/log').then(r=>r.json()).then(d=>{data=d;document.getElementById('loading').style.display='none';filtrele()});
+function filtrele(){
+  const t=document.getElementById('f-tablo').value.toLowerCase();
+  const k=document.getElementById('f-kul').value.toLowerCase();
+  const a=document.getElementById('f-alan').value.toLowerCase();
+  const list=data.filter(r=>(!t||(r.TabloAdi||'').toLowerCase().includes(t))&&(!k||(r.KullaniciAdi||'').toLowerCase().includes(k))&&(!a||(r.AlanAdi||'').toLowerCase().includes(a)));
+  const tb=document.getElementById('tablo');
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" class="empty">Kayıt yok</td></tr>';return}
+  tb.innerHTML=list.map(r=>`<tr>
+    <td style="font-size:10px;font-family:monospace;white-space:nowrap">${r.DegisimTarihi}</td>
+    <td><span class="badge b-blue">${r.TabloAdi||''}</span></td>
+    <td style="font-family:monospace;font-size:10px">${r.KayitID}</td>
+    <td style="font-size:11px;color:var(--text2)">${r.AlanAdi||''}</td>
+    <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--red)" title="${(r.EskiDeger||'').replace(/"/g,'')}">${r.EskiDeger||'—'}</td>
+    <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--green)" title="${(r.YeniDeger||'').replace(/"/g,'')}">${r.YeniDeger||'—'}</td>
+    <td style="font-size:11px">${r.KullaniciAdi||''}</td>
+  </tr>`).join('');
+}
+</script>
+{% endblock %}
