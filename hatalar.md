@@ -1,3 +1,4 @@
+# Hatalar
 + Admin olmayan kullanıcılar kulanıcı ekleyip silebiliyor başkasının parolasını değiştirebiliyor? 
 (hatta admin olmayanlar kulanıcılar side menüsünü görmemeli mi?)
 + Kullanıcılar kendi kendilerinin girişini kitleyebilir (neden?)
