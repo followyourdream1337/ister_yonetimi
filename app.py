@@ -1298,6 +1298,7 @@ def bullet_siralama():
         cur2.execute("UPDATE ister_bullet SET SiraNo=%s WHERE BulletID=%s", (tum[idx]['SiraNo'], tum[hedef]['BulletID']))
         mysql.connection.commit(); cur2.close()
     cur.close(); return jsonify({'ok': True})
+@app.route('/api/toplu_upload', methods=['POST'])
 @login_gerekli
 def toplu_upload():
     """Toplu ister yükleme: liste halinde isterler"""
