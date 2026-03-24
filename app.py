@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from functools import wraps
 from datetime import datetime
+from enum import Enum
 
 app = Flask(__name__)
 app.secret_key = 'ister_v2_secret_2024'
@@ -13,6 +14,11 @@ app.config['MYSQL_DB'] = 'sql8820996'
 app.config['MYSQL_CHARSET'] = 'utf8mb4'
 mysql = MySQL(app)
 
+class LogTur(Enum):
+    CREATE = "Ekleme"
+    UPDATE = "Güncelleme"
+    DELETE = "Silme"
+
 def login_gerekli(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -21,14 +27,14 @@ def login_gerekli(f):
         return f(*args, **kwargs)
     return decorated
 
-def log_kaydet(tablo, kayit_id, alan, eski, yeni):
+def log_kaydet(tablo, kayit_id, alan, eski, yeni, tur):
     if str(eski or '') == str(yeni or ''):
         return
     cur = mysql.connection.cursor()
-    cur.execute("""INSERT INTO degisiklik_log (TabloAdi,KayitID,AlanAdi,EskiDeger,YeniDeger,KullaniciID,KullaniciAdi,DegisimTarihi)
-                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
+    cur.execute("""INSERT INTO degisiklik_log (TabloAdi,KayitID,AlanAdi,EskiDeger,YeniDeger,KullaniciID,KullaniciAdi,DegisimTarihi,Tur)
+                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                 (tablo, kayit_id, alan, str(eski or ''), str(yeni or ''),
-                 session.get('kullanici_id'), session.get('kullanici_adi'), datetime.now()))
+                 session.get('kullanici_id'), session.get('kullanici_adi'), datetime.now(),tur))
     mysql.connection.commit()
     cur.close()
 
@@ -89,7 +95,7 @@ def ta_dokuman_sayfasi(): return render_template('ta_dokuman.html')
 
 @app.route('/log')
 @login_gerekli
-def log_sayfasi(): return render_template('log.html')
+def log_sayfasi(): return render_template('log.html',LogTur=LogTur)
 
 @app.route('/kullanici')
 @login_gerekli
@@ -271,6 +277,7 @@ def konfig_ekle():
     d = request.json; cur = mysql.connection.cursor()
     cur.execute("INSERT INTO konfig_list (KonfigAdi) VALUES (%s)", (d['KonfigAdi'],))
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
+    log_kaydet('konfig_list', nid, 'KonfigAdi', '-', d['KonfigAdi'],LogTur.CREATE.value)
     return jsonify({'KonfigID': nid, 'KonfigAdi': d['KonfigAdi']})
 
 @app.route('/api/konfig/<int:kid>', methods=['PUT'])
@@ -281,7 +288,7 @@ def konfig_guncelle(kid):
     eski = cur.fetchone()
     cur.execute("UPDATE konfig_list SET KonfigAdi=%s WHERE KonfigID=%s", (d['KonfigAdi'], kid))
     mysql.connection.commit()
-    if eski: log_kaydet('konfig_list', kid, 'KonfigAdi', eski['KonfigAdi'], d['KonfigAdi'])
+    if eski: log_kaydet('konfig_list', kid, 'KonfigAdi', eski['KonfigAdi'], d['KonfigAdi'],LogTur.UPDATE.value)
     cur.close(); return jsonify({'ok': True})
 
 @app.route('/api/konfig/<int:kid>', methods=['DELETE'])
@@ -308,6 +315,7 @@ def platform_ekle():
     d = request.json; cur = mysql.connection.cursor()
     cur.execute("INSERT INTO platform_list (PlatformAdi, HavuzMu) VALUES (%s, 0)", (d['PlatformAdi'],))
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
+    log_kaydet('platform_list', nid, 'Platform','-', d['PlatformAdi'],LogTur.CREATE.value)
     return jsonify({'PlatformID': nid})
 
 @app.route('/api/platform/<int:pid>', methods=['PUT'])
@@ -318,7 +326,7 @@ def platform_guncelle(pid):
     eski = cur.fetchone()
     cur.execute("UPDATE platform_list SET PlatformAdi=%s WHERE PlatformID=%s", (d['PlatformAdi'], pid))
     mysql.connection.commit()
-    if eski: log_kaydet('platform_list', pid, 'PlatformAdi', eski['PlatformAdi'], d['PlatformAdi'])
+    if eski: log_kaydet('platform_list', pid, 'PlatformAdi', eski['PlatformAdi'], d['PlatformAdi'],LogTur.UPDATE.value)
     cur.close(); return jsonify({'ok': True})
 
 @app.route('/api/platform/<int:pid>', methods=['DELETE'])
@@ -535,6 +543,7 @@ def ister_node_ekle():
                  d.get('Icerik',''), d.get('TestYontemiID'), d.get('IlgiliAsamaID'),
                  session['kullanici_id']))
     mysql.connection.commit(); nid = cur2.lastrowid; cur.close(); cur2.close()
+    log_kaydet('ister_node', nid, 'Node', '-', d.get('Icerik',''),LogTur.CREATE.value)
     return jsonify({'NodeID': nid, 'HavuzKodu': havuz_kodu})
 
 @app.route('/api/ister_node/<int:nid>', methods=['PUT'])
@@ -571,9 +580,9 @@ def ister_node_guncelle(nid):
     mysql.connection.commit()
     if eski:
         if str(eski.get('Icerik') or '') != str(d.get('Icerik') or ''):
-            log_kaydet('ister_node', nid, 'Icerik', eski.get('Icerik'), d.get('Icerik'))
+            log_kaydet('ister_node', nid, 'Icerik', eski.get('Icerik'), d.get('Icerik'),LogTur.UPDATE.value)
         if str(eski.get('NodeNumarasi') or '') != str(d.get('NodeNumarasi') or ''):
-            log_kaydet('ister_node', nid, 'NodeNumarasi', eski.get('NodeNumarasi'), d.get('NodeNumarasi'))
+            log_kaydet('ister_node', nid, 'NodeNumarasi', eski.get('NodeNumarasi'), d.get('NodeNumarasi'),LogTur.UPDATE.value)
     cur.close(); return jsonify({'ok': True})
 
 @app.route('/api/ister_node/<int:nid>', methods=['DELETE'])
@@ -738,7 +747,7 @@ def test_sonuc_kaydet():
     if eski:
         cur.execute("UPDATE test_sonuc SET Sonuc=%s, Aciklama=%s, KullaniciID=%s, Tarih=NOW() WHERE TestSonucID=%s",
                     (d['Sonuc'], d.get('Aciklama',''), session['kullanici_id'], eski['TestSonucID']))
-        log_kaydet('test_sonuc', eski['TestSonucID'], 'Sonuc', eski['Sonuc'], d['Sonuc'])
+        log_kaydet('test_sonuc', eski['TestSonucID'], 'Sonuc', eski['Sonuc'], d['Sonuc'],LogTur.UPDATE.value)
     else:
         cur.execute("INSERT INTO test_sonuc (NodeID,TestAsamaID,Sonuc,Aciklama,KullaniciID) VALUES (%s,%s,%s,%s,%s)",
                     (d['NodeID'], d['TestAsamaID'], d['Sonuc'], d.get('Aciklama',''), session['kullanici_id']))
@@ -787,6 +796,7 @@ def ta_ekle(pid):
     cur.execute("INSERT INTO ta_dokuman (PlatformID,SiraNo,SolSistemAdi,SagSistemAdi) VALUES (%s,%s,%s,%s)",
                 (pid, sira, d.get('SolSistemAdi',''), d.get('SagSistemAdi','')))
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
+    log_kaydet('TA Dokümanları', pid, 'Platform', '-', d.get('SolSistemAdi',''),LogTur.CREATE.value)
     return jsonify({'TaID': nid, 'SiraNo': sira})
 
 @app.route('/api/ta/<int:ta_id>', methods=['PUT'])
@@ -954,6 +964,7 @@ def kullanici_ekle():
     cur.execute("INSERT INTO kullanici (KullaniciAdi,Sifre,AdSoyad,AktifMi) VALUES (%s,%s,%s,%s)",
                 (d['KullaniciAdi'], d['Sifre'], d.get('AdSoyad',''), d.get('AktifMi',1)))
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
+    log_kaydet('kullanici', nid, 'Kullanıcılar', '-', d.get('KullaniciAdi',''),LogTur.CREATE.value)
     return jsonify({'KullaniciID': nid})
 
 @app.route('/api/kullanici/<int:uid>', methods=['PUT'])
@@ -1013,6 +1024,7 @@ def ister_tablo_ekle():
                 (d['NodeID'], d.get('TabloAdi',''), json_mod.dumps(d.get('SutunBasliklari',[])),
                  json_mod.dumps(d.get('Satirlar',[])), session['kullanici_id']))
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
+    log_kaydet('ister_tablo', nid, 'Tablo', '-', d.get('TabloAdi',''),LogTur.CREATE.value)
     return jsonify({'TabloID': nid})
 
 @app.route('/api/ister_tablo/<int:tid>', methods=['PUT'])
@@ -1286,6 +1298,7 @@ def bullet_ekle():
     cur.execute("INSERT INTO ister_bullet (NodeID,SiraNo,Icerik,OlusturanID) VALUES (%s,%s,%s,%s)",
                 (d['NodeID'], sira, d['Icerik'], session['kullanici_id']))
     mysql.connection.commit(); bid = cur.lastrowid; cur.close()
+    log_kaydet('ister_bullet', bid, 'Bullet', '-',  d['Icerik'],LogTur.CREATE.value)
     return jsonify({'BulletID': bid, 'SiraNo': sira})
 
 @app.route('/api/ister_bullet/<int:bid>', methods=['PUT'])

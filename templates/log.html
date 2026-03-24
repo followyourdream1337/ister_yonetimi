@@ -9,7 +9,7 @@
     <input id="f-kul" placeholder="Kullanıcı..." oninput="filtrele()" style="flex:1;min-width:150px">
     <input id="f-alan" placeholder="Alan..." oninput="filtrele()" style="flex:1;min-width:150px">
   </div>
-  <table><thead><tr><th>Tarih</th><th>Tablo</th><th>Kayıt</th><th>Alan</th><th>Eski</th><th>Yeni</th><th>Kullanıcı</th></tr></thead>
+  <table><thead><tr><th>Tarih</th><th>Tablo</th><th>Kayıt</th><th>Alan</th><th>Eski</th><th>Yeni</th><th>Kullanıcı</th><th>Tur</th></tr></thead>
   <tbody id="tablo"></tbody></table>
   <div id="loading" style="text-align:center;padding:20px;color:var(--text3)">Yükleniyor...</div>
 </div>
@@ -22,18 +22,48 @@ function filtrele(){
   const t=document.getElementById('f-tablo').value.toLowerCase();
   const k=document.getElementById('f-kul').value.toLowerCase();
   const a=document.getElementById('f-alan').value.toLowerCase();
-  const list=data.filter(r=>(!t||(r.TabloAdi||'').toLowerCase().includes(t))&&(!k||(r.KullaniciAdi||'').toLowerCase().includes(k))&&(!a||(r.AlanAdi||'').toLowerCase().includes(a)));
-  const tb=document.getElementById('tablo');
-  if(!list.length){tb.innerHTML='<tr><td colspan="7" class="empty">Kayıt yok</td></tr>';return}
-  tb.innerHTML=list.map(r=>`<tr>
-    <td style="font-size:10px;font-family:monospace;white-space:nowrap">${r.DegisimTarihi}</td>
-    <td><span class="badge b-blue">${r.TabloAdi||''}</span></td>
-    <td style="font-family:monospace;font-size:10px">${r.KayitID}</td>
-    <td style="font-size:11px;color:var(--text2)">${r.AlanAdi||''}</td>
-    <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--red)" title="${(r.EskiDeger||'').replace(/"/g,'')}">${r.EskiDeger||'—'}</td>
-    <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--green)" title="${(r.YeniDeger||'').replace(/"/g,'')}">${r.YeniDeger||'—'}</td>
-    <td style="font-size:11px">${r.KullaniciAdi||''}</td>
-  </tr>`).join('');
+  
+  const list = data.filter(r => 
+    (!t || (r.TabloAdi || '').toLowerCase().includes(t)) &&
+    (!k || (r.KullaniciAdi || '').toLowerCase().includes(k)) &&
+    (!a || (r.AlanAdi || '').toLowerCase().includes(a))
+  );
+
+  const tb = document.getElementById('tablo');
+  
+  // colspan değerini 8'e çıkardık (Tur eklendiği için)
+  if(!list.length){tb.innerHTML='<tr><td colspan="8" class="empty">Kayıt yok</td></tr>';return}
+
+  tb.innerHTML = list.map(r => {
+    let turClass = '';
+    const tur = r.Tur; // API'den gelen değer ("Ekleme", "Güncelleme" vb.)
+    
+    // Doğrudan app.py'den gelen Enum değerleriyle kıyaslama
+    if (tur === "{{ LogTur.CREATE.value }}") {
+        turClass = 'background-color: #28a745; color: white;'; // Yeşil
+    } else if (tur === "{{ LogTur.UPDATE.value }}") {
+        turClass = 'background-color: #ffc107; color: #333;';  // Sarı
+    } else if (tur === "{{ LogTur.DELETE.value }}") {
+        turClass = 'background-color: #dc3545; color: white;'; // Kırmızı
+    } else {
+        turClass = 'background-color: #6c757d; color: white;'; // Belirsiz: Gri
+    }
+
+    return `<tr>
+      <td style="font-size:10px;font-family:monospace;white-space:nowrap">${r.DegisimTarihi}</td>
+      <td><span class="badge b-blue">${r.TabloAdi||''}</span></td>
+      <td style="font-family:monospace;font-size:10px">${r.KayitID}</td>
+      <td style="font-size:11px;color:var(--text2)">${r.AlanAdi||''}</td>
+      <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--red)" title="${(r.EskiDeger||'').replace(/"/g,'')}">${r.EskiDeger||'—'}</td>
+      <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--green)" title="${(r.YeniDeger||'').replace(/"/g,'')}">${r.YeniDeger||'—'}</td>
+      <td style="font-size:11px">${r.KullaniciAdi||''}</td>
+      <td>
+        <span class="badge" style="font-size:9px; padding:2px 6px; border-radius:4px; ${turClass}">
+          ${tur || '—'}
+        </span>
+      </td>
+    </tr>`;
+  }).join('');
 }
 </script>
 {% endblock %}
