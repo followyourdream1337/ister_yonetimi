@@ -6,10 +6,12 @@
 + Kullanıcılar kendi kendilerinin girişini kitleyebilir (neden?)
 + Platform (platformlar sayfası) name unique değil (olmalı mı?)
 + Admin kulanıcıları havuzun altındaki isterleri silebiliyor olmalı mı?
++ Excel import hatalı
 
 ## Askıdakiler
++ Havuz isterlerde Tablolar güncellenemiyor silinemiyor.
+
+## Yapılanlar
 + Konfigürasayon silince ve eklenince değişiklik logu basmalı mı?
 + Platform silince ve eklenince değişiklik logu basmalı mı?
 + Havuz isterlerde maddeler (bullet) güncellenince değişiklik log basılmıyor.
-+ Havuz isterlerde Tablolar güncellenemiyor silinemiyor.
-+ Excel import hatalı
