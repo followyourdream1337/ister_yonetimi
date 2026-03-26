@@ -9,14 +9,20 @@
 + Excel import hatalı
 
 ## Askıdakiler
-+ Havuz isterlerde Tablolar güncellenemiyor silinemiyor.
++ log time hatalı global saat hatası -3 saat gözüküyot gmt+3 türkiye saati kullan
++ tabloda satır sütünlar güncellenince de log basılmalı mı?
++ tablo silme güncelleme platform isterde de gerekli mi?
 
 ## Yapılanlar
 + Konfigürasayon silince ve eklenince değişiklik logu basmalı mı?
 + Platform silince ve eklenince değişiklik logu basmalı mı?
 + Havuz isterlerde maddeler (bullet) güncellenince değişiklik log basılmıyor.
-
-+ log time hatalı mı?
-+ tabloda satır sütünlar güncellenince de log basılmalı mı?
-+ tablo güncelede modal adı tablo ekle 
-+ tablo silme güncelleme platform isterde de gerekli mi?
++ tablo güncelede modal adı tablo ekle
++ Havuz isterlerde Tablolar güncellenemiyor silinemiyor.
++ Yeni column eklendi. 
+```` 
+ALTER TABLE Log
+ADD Tur VARCHAR(10); 
+```` 
++ Log sayfasında türe göre friltreleme eklendi.
++ Log sayfasında tür listelendi.

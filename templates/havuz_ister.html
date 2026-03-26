@@ -163,7 +163,7 @@ mark{background:#fef08a;border-radius:2px;padding:0 1px}
 <!-- TABLO MODAL -->
 <div class="modal-overlay" id="m-tablo">
   <div class="modal" style="max-width:680px">
-    <div class="modal-hd"><div class="modal-title">Tablo Ekle</div><span class="modal-close" onclick="mc('m-tablo')">✕</span></div>
+    <div class="modal-hd"><div class="modal-title" id="mt-baslik">Tablo Ekle</div><span class="modal-close" onclick="mc('m-tablo')">✕</span></div>
     <div class="fg"><label class="fl">Tablo Adı</label><input type="text" id="mt-adi"></div>
     <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px">
       <input type="text" id="mt-sutun" placeholder="Sütun adı" style="flex:1">
@@ -442,35 +442,24 @@ function tabloKaydet() {
 }
 
 function tabloDuzenleModal(t) {
-    document.getElementById('mt-tid').value = t.TabloID; // ID'yi gizli inputa yaz
+    document.getElementById('mt-tid').value = t.TabloID;
     document.getElementById('mt-nid').value = t.NodeID;
     document.getElementById('mt-adi').value = t.TabloAdi;
-    
-    // JSON parse işlemleri
+    document.getElementById('mt-baslik').innerHTML = 'Tablo Güncelle';
     mtSutunlar = typeof t.SutunBasliklari === 'string' ? JSON.parse(t.SutunBasliklari) : t.SutunBasliklari;
     mtSatirlar = typeof t.Satirlar === 'string' ? JSON.parse(t.Satirlar) : t.Satirlar;
-    
     renderMtPreview();
     document.getElementById('m-tablo').classList.add('on');
 }
 
-
 function tabloModal(nid) {
+    document.getElementById('mt-baslik').innerHTML = 'Tablo Ekle';
     document.getElementById('mt-tid').value = ''; 
     document.getElementById('mt-nid').value = nid;
     document.getElementById('mt-adi').value = '';
     mtSutunlar = [];
     mtSatirlar = [];
-    renderMtPreview();
-    document.getElementById('m-tablo').classList.add('on');
-}
-
-// tabloModal (Yeni ekleme) açılırken ID'yi sıfırlamayı unutma
-function tabloModal(nid){
     mtTabloID = null; 
-    document.getElementById('mt-nid').value=nid;
-    document.getElementById('mt-adi').value='';
-    mtSutunlar=[]; mtSatirlar=[]; 
     renderMtPreview();
     document.getElementById('m-tablo').classList.add('on');
 }
@@ -768,7 +757,6 @@ function yanitKaydet(gid,nid){
 }
 
 // ── TABLO ─────────────────────────────────────────────────────────────────
-function tabloModal(nid){document.getElementById('mt-nid').value=nid;document.getElementById('mt-adi').value='';mtSutunlar=[];mtSatirlar=[];renderMtPreview();document.getElementById('m-tablo').classList.add('on');}
 function mtSutunEkle(){const v=document.getElementById('mt-sutun').value.trim();if(!v)return;mtSutunlar.push(v);mtSatirlar=mtSatirlar.map(r=>[...r,'']);document.getElementById('mt-sutun').value='';renderMtPreview();}
 function mtSatirEkle(){mtSatirlar.push(mtSutunlar.map(()=>''));renderMtPreview();}
 function mtSutunSil(i){mtSutunlar.splice(i,1);mtSatirlar=mtSatirlar.map(r=>{r.splice(i,1);return r;});renderMtPreview();}
