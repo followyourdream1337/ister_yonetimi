@@ -12,6 +12,8 @@
 + log time hatalı global saat hatası -3 saat gözüküyot gmt+3 türkiye saati kullan
 
 ## Yapılanlar
++ Toplu upload route eklendi.
++ TA SGÖ ilişki kuralı eklendi.
 + Konfigürasayon silince ve eklenince değişiklik logu basmalı mı?
 + Platform silince ve eklenince değişiklik logu basmalı mı?
 + Havuz isterlerde maddeler (bullet) güncellenince değişiklik log basılmıyor.
