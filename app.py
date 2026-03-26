@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from functools import wraps
-from datetime import datetime
+from datetime import datetime,timezone,timedelta
 from enum import Enum
 
 app = Flask(__name__)
@@ -34,7 +34,7 @@ def log_kaydet(tablo, kayit_id, alan, eski, yeni, tur):
     cur.execute("""INSERT INTO degisiklik_log (TabloAdi,KayitID,AlanAdi,EskiDeger,YeniDeger,KullaniciID,KullaniciAdi,DegisimTarihi,Tur)
                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                 (tablo, kayit_id, alan, str(eski or ''), str(yeni or ''),
-                 session.get('kullanici_id'), session.get('kullanici_adi'), datetime.now(),tur))
+                 session.get('kullanici_id'), session.get('kullanici_adi'), datetime.now(timezone(timedelta(hours=3))),tur))
     mysql.connection.commit()
     cur.close()
 
@@ -598,8 +598,6 @@ def ister_node_sil(nid):
     cur = cur_dict()
     cur.execute("SELECT n.PlatformID, p.HavuzMu, n.Icerik FROM ister_node n JOIN platform_list p ON n.PlatformID=p.PlatformID WHERE n.NodeID=%s", (nid,))
     node = cur.fetchone()
-    if node and node['HavuzMu']:
-        cur.close(); return jsonify({'hata': 'Havuz isterleri silinemez.'}), 400
     log_kaydet('ister_node', nid, 'Node', node['Icerik'], '-', LogTur.DELETE.value)
     cur.execute("DELETE FROM ister_node WHERE NodeID=%s", (nid,))
     mysql.connection.commit(); cur.close(); return jsonify({'ok': True})

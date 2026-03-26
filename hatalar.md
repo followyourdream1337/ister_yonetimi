@@ -9,7 +9,7 @@
 + Excel import hatalı
 
 ## Askıdakiler
-+ log time hatalı global saat hatası -3 saat gözüküyot gmt+3 türkiye saati kullan
++ Log kayıtları konfig başlık ve seviyeye ile filtreleme olmalı.
 
 ## Yapılanlar
 + Toplu upload route eklendi.
@@ -28,3 +28,5 @@ ADD Tur VARCHAR(10);
 + Log sayfasında tür listelendi.
 + tabloda satır sütünlar güncellenince de log basılmalı mı?
 + tablo silme güncelleme platform isterde de gerekli mi?
++ log time hatalı global saat hatası -3 saat gözüküyot gmt+3 türkiye saati kullan
++ Havuz isterleri silinebilir olamlı.
