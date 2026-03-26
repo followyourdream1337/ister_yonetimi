@@ -11,7 +11,7 @@
 ## Askıdakiler
 + Log basılmayan yerler var! (kulanıcı güncelleme örn) todo eklendi ordan bak
 + Firma görüşü silinebilir ve güncellenebilir olmalı akabinde log da basmalı.
-
++ Havuzda Platform isterdeki gibi firma görüşleri gözükmeli mi?
 ## Yapılanlar
 + Toplu upload route eklendi.
 + TA SGÖ ilişki kuralı eklendi.

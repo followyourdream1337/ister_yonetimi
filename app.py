@@ -804,7 +804,7 @@ def ta_ekle(pid):
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
     log_kaydet('TA Dokümanları', pid, 'Platform', '-', d.get('SolSistemAdi',''),LogTur.CREATE.value)
     return jsonify({'TaID': nid, 'SiraNo': sira})
-// todo güncelle log bas
+# todo güncelle log bas
 @app.route('/api/ta/<int:ta_id>', methods=['PUT'])
 @login_gerekli
 def ta_guncelle(ta_id):
@@ -972,7 +972,7 @@ def kullanici_ekle():
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
     log_kaydet('kullanici', nid, 'Kullanıcılar', '-', d.get('KullaniciAdi',''),LogTur.CREATE.value)
     return jsonify({'KullaniciID': nid})
-// todo güncelle log bas
+# todo güncelle log bas
 @app.route('/api/kullanici/<int:uid>', methods=['PUT'])
 @login_gerekli
 def kullanici_guncelle(uid):
@@ -984,7 +984,7 @@ def kullanici_guncelle(uid):
         cur.execute("UPDATE kullanici SET KullaniciAdi=%s,AdSoyad=%s,AktifMi=%s WHERE KullaniciID=%s",
                     (d['KullaniciAdi'],d.get('AdSoyad',''),d.get('AktifMi',1),uid))
     mysql.connection.commit(); cur.close(); return jsonify({'ok': True})
-// todo sil log bas
+# todo sil log bas
 @app.route('/api/kullanici/<int:uid>', methods=['DELETE'])
 @login_gerekli
 def kullanici_sil(uid):
@@ -1112,7 +1112,7 @@ def firma_gorusu_listesi(node_id):
             if y.get('OlusturmaTarihi'): y['OlusturmaTarihi'] = y['OlusturmaTarihi'].strftime('%d.%m.%Y %H:%M')
         g['yanitlar'] = yanitlar
     cur.close(); return jsonify(gorus_list)
-//  todo log bas
+#  todo log bas
 @app.route('/api/firma_gorusu', methods=['POST'])
 @login_gerekli
 def firma_gorusu_ekle():
@@ -1123,7 +1123,7 @@ def firma_gorusu_ekle():
                  d.get('GorusOzet',''), d.get('GorusKategori',''), session['kullanici_id']))
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
     return jsonify({'GorusID': nid})
-// todo güncelle log bas
+# todo güncelle log bas
 @app.route('/api/firma_gorusu/<int:gid>', methods=['PUT'])
 @login_gerekli
 def firma_gorusu_guncelle(gid):
@@ -1136,7 +1136,7 @@ def firma_gorusu_guncelle(gid):
                 (d['FirmaAdi'], d.get('GorusIcerik',''), d.get('GorusOzet',''), d.get('GorusKategori',''), gid))
     
     mysql.connection.commit(); cur.close(); return jsonify({'ok': True})
-// todo sil log bas
+# todo sil log bas
 @app.route('/api/firma_gorusu/<int:gid>', methods=['DELETE'])
 @login_gerekli
 def firma_gorusu_sil(gid):
@@ -1166,7 +1166,7 @@ def ister_onay_getir(node_id):
     cur.execute("SELECT * FROM ister_onay WHERE NodeID=%s AND PlatformID=%s", (node_id, pid))
     d = cur.fetchone(); cur.close()
     return jsonify(d or {'NodeID': node_id, 'PlatformID': pid, 'OnayDurumu': 0})
-// todo log bas
+# todo log bas
 @app.route('/api/ister_onay', methods=['POST'])
 @login_gerekli
 def ister_onay_kaydet():
