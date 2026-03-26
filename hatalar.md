@@ -9,7 +9,8 @@
 + Excel import hatalı
 
 ## Askıdakiler
-+ Log basılmayan yerler var! (kulanıcı güncelleme örn)
++ Log basılmayan yerler var! (kulanıcı güncelleme örn) todo eklendi ordan bak
++ Firma görüşü silinebilir ve güncellenebilir olmalı akabinde log da basmalı.
 
 ## Yapılanlar
 + Toplu upload route eklendi.
