@@ -9,8 +9,8 @@
 + Excel import hatalı
 + Havuzda Platform isterdeki gibi firma görüşleri gözükmeli mi?
 ## Askıdakiler
-+ Firma görüşü silinebilir ve güncellenebilir olmalı akabinde log da basmalı.
-+ Havuzda Platform isterdeki gibi firma görüşleri gözükmeli mi? 
++ gmt time hatası
++ firma görüş yanıt log da basmalı.
 ## Yapılanlar
 + Toplu upload route eklendi.
 + TA SGÖ ilişki kuralı eklendi.
@@ -33,3 +33,4 @@ ADD Tur VARCHAR(10);
 + log time hatalı global saat hatası -3 saat gözüküyot gmt+3 türkiye saati kullan
 + Havuz isterleri silinebilir olamlı.
 + Log kayıtları platform başlık ve seviyeye ile filtreleme olmalı.
++ Firma görüşü silinebilir ve güncellenebilir olmalı.
