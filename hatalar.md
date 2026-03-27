@@ -9,10 +9,8 @@
 + Excel import hatalı
 + Havuzda Platform isterdeki gibi firma görüşleri gözükmeli mi?
 ## Askıdakiler
-+ Log basılmayan yerler var! (kulanıcı güncelleme örn) todo eklendi ordan bak
 + Firma görüşü silinebilir ve güncellenebilir olmalı akabinde log da basmalı.
-+ Time error var zaman -3 saat olarak gözüküyor!
-+ Havuzda Görüş tuşu gözükmesin.
++ Havuzda Platform isterdeki gibi firma görüşleri gözükmeli mi? 
 ## Yapılanlar
 + Toplu upload route eklendi.
 + TA SGÖ ilişki kuralı eklendi.
@@ -22,7 +20,8 @@
 + tablo güncelede modal adı tablo ekle
 + Havuz isterlerde Tablolar güncellenemiyor silinemiyor.
 + Yeni column eklendi. 
-
++ Havuz isterlerdeki "Görüş" kısmı kaldırıldı.
++ Log basımı eksik olan kısımlar tamamlandı.
 ```` 
 ALTER TABLE degisiklik_log
 ADD Tur VARCHAR(10); 

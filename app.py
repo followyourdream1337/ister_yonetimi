@@ -804,7 +804,7 @@ def ta_ekle(pid):
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
     log_kaydet('TA Dokümanları', pid, 'Platform', '-', d.get('SolSistemAdi',''),LogTur.CREATE.value)
     return jsonify({'TaID': nid, 'SiraNo': sira})
-# todo güncelle log bas
+
 @app.route('/api/ta/<int:ta_id>', methods=['PUT'])
 @login_gerekli
 def ta_guncelle(ta_id):
@@ -815,7 +815,8 @@ def ta_guncelle(ta_id):
     for v in d.get('veriler', []):
         cur.execute("INSERT INTO ta_veri (TaID,Sistem,Yon,Icerik,Sira) VALUES (%s,%s,%s,%s,%s)",
                     (ta_id, v['sistem'], v['yon'], v['icerik'], v.get('sira',0)))
-    mysql.connection.commit(); cur.close(); return jsonify({'ok': True})
+    mysql.connection.commit(); cur.close(); log_kaydet('TA Dokümanları', ta_id, 'Platform', 'Güncellendi!', d.get('SolSistemAdi',''),LogTur.UPDATE.value)
+    return jsonify({'ok': True})
 
 @app.route('/api/ta/<int:ta_id>/sgo_bagla', methods=['POST'])
 @login_gerekli
@@ -972,7 +973,7 @@ def kullanici_ekle():
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
     log_kaydet('kullanici', nid, 'Kullanıcılar', '-', d.get('KullaniciAdi',''),LogTur.CREATE.value)
     return jsonify({'KullaniciID': nid})
-# todo güncelle log bas
+
 @app.route('/api/kullanici/<int:uid>', methods=['PUT'])
 @login_gerekli
 def kullanici_guncelle(uid):
@@ -983,8 +984,9 @@ def kullanici_guncelle(uid):
     else:
         cur.execute("UPDATE kullanici SET KullaniciAdi=%s,AdSoyad=%s,AktifMi=%s WHERE KullaniciID=%s",
                     (d['KullaniciAdi'],d.get('AdSoyad',''),d.get('AktifMi',1),uid))
-    mysql.connection.commit(); cur.close(); return jsonify({'ok': True})
-# todo sil log bas
+    mysql.connection.commit(); cur.close(); log_kaydet('kullanici', uid, 'Kullanıcılar', 'Güncellendi', d.get('KullaniciAdi',''),LogTur.UPDATE.value)
+    return jsonify({'ok': True})
+
 @app.route('/api/kullanici/<int:uid>', methods=['DELETE'])
 @login_gerekli
 def kullanici_sil(uid):
@@ -992,6 +994,7 @@ def kullanici_sil(uid):
         return jsonify({'hata': 'Kendi hesabınızı silemezsiniz.'}), 400
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM kullanici WHERE KullaniciID=%s", (uid,))
+    log_kaydet('kullanici', uid, 'Kullanıcılar', 'Silindi', '-', LogTur.DELETE.value)
     mysql.connection.commit(); cur.close(); return jsonify({'ok': True})
 
 # ── TEST YÖNTEMİ ──────────────────────────────────────────────────────────────
@@ -1112,7 +1115,7 @@ def firma_gorusu_listesi(node_id):
             if y.get('OlusturmaTarihi'): y['OlusturmaTarihi'] = y['OlusturmaTarihi'].strftime('%d.%m.%Y %H:%M')
         g['yanitlar'] = yanitlar
     cur.close(); return jsonify(gorus_list)
-#  todo log bas
+
 @app.route('/api/firma_gorusu', methods=['POST'])
 @login_gerekli
 def firma_gorusu_ekle():
@@ -1122,8 +1125,9 @@ def firma_gorusu_ekle():
                 (d['NodeID'], d['PlatformID'], d['FirmaAdi'], d.get('GorusIcerik',''),
                  d.get('GorusOzet',''), d.get('GorusKategori',''), session['kullanici_id']))
     mysql.connection.commit(); nid = cur.lastrowid; cur.close()
+    log_kaydet('firma_gorusu', nid, 'Firma Görüşleri', '-', d['FirmaAdi'], LogTur.CREATE.value)
     return jsonify({'GorusID': nid})
-# todo güncelle log bas
+
 @app.route('/api/firma_gorusu/<int:gid>', methods=['PUT'])
 @login_gerekli
 def firma_gorusu_guncelle(gid):
@@ -1134,8 +1138,8 @@ def firma_gorusu_guncelle(gid):
         log_kaydet('firma_gorusu', gid, 'Firma Görüşleri', 'Güncellendi', d.get('GorusIcerik',''), LogTur.UPDATE.value)
     cur.execute("UPDATE firma_gorusu SET FirmaAdi=%s,GorusIcerik=%s,GorusOzet=%s,GorusKategori=%s WHERE GorusID=%s",
                 (d['FirmaAdi'], d.get('GorusIcerik',''), d.get('GorusOzet',''), d.get('GorusKategori',''), gid))
-    
-    mysql.connection.commit(); cur.close(); return jsonify({'ok': True})
+    mysql.connection.commit(); cur.close(); log_kaydet('firma_gorusu', gid, 'Firma Görüşleri', 'Güncellendi', d.get('FirmaAdi',''), LogTur.UPDATE.value)
+    return jsonify({'ok': True})
 # todo sil log bas
 @app.route('/api/firma_gorusu/<int:gid>', methods=['DELETE'])
 @login_gerekli
@@ -1228,7 +1232,8 @@ def ister_onay_kaydet():
         cur.execute("""INSERT INTO ister_onay (NodeID,PlatformID,OnayDurumu)
                        VALUES (%s,%s,0) ON DUPLICATE KEY UPDATE OnayDurumu=0""",
                     (d['NodeID'], d['PlatformID']))
-    mysql.connection.commit(); cur.close(); return jsonify({'ok': True})
+    mysql.connection.commit(); cur.close(); log_kaydet('ister_onay', d['NodeID'], 'İster Onayları', 'Güncellendi', '-', LogTur.UPDATE.value)
+    return jsonify({'ok': True})
 
 # ── RAPOR API'LERİ ────────────────────────────────────────────────────────────
 @app.route('/api/rapor/firma_gorusleri', methods=['GET'])

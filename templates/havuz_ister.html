@@ -145,20 +145,6 @@ mark{background:#fef08a;border-radius:2px;padding:0 1px}
   </div>
 </div>
 
-<!-- FİRMA GÖRÜŞÜ MODAL -->
-<div class="modal-overlay" id="m-gorus">
-  <div class="modal" style="max-width:500px">
-    <div class="modal-hd"><div class="modal-title">Firma Görüşü Ekle</div><span class="modal-close" onclick="mc('m-gorus')">✕</span></div>
-    <div class="fg"><label class="fl">Firma Adı</label><input type="text" id="mg-firma"></div>
-    <div class="fg"><label class="fl">İçerik</label><textarea id="mg-icerik" rows="4"></textarea></div>
-    <div class="fg"><label class="fl">Özet / Kategori</label><input type="text" id="mg-ozet" placeholder="Maliyet itirazı..."></div>
-    <input type="hidden" id="mg-nid">
-    <div class="modal-ft">
-      <button class="btn btn-ghost" onclick="mc('m-gorus')">İptal</button>
-      <button class="btn btn-primary" onclick="gorusKaydet()">Kaydet</button>
-    </div>
-  </div>
-</div>
 
 <!-- TABLO MODAL -->
 <div class="modal-overlay" id="m-tablo">
@@ -355,7 +341,6 @@ function renderKutu(node,liste){
           <button class="bm" onclick="yeniIsterModal(${node.NodeID},'B','alt')">+ Alt Başlık</button>
           <button class="bm" onclick="bulletEkle(${node.NodeID})">• Bullet Ekle</button>
           <button class="bm" onclick="tabloModal(${node.NodeID})">+ Tablo</button>
-          <button class="bm" onclick="gorusModal(${node.NodeID})">+ Görüş</button>
           <button class="bm" onclick="duzModal(${node.NodeID})">✎</button>
           <button class="bm d" onclick="isterSil(${node.NodeID})">✕</button>
         </div>
@@ -754,15 +739,6 @@ function isterSil(nid){
   });
 }
 
-// ── GÖRÜŞ ─────────────────────────────────────────────────────────────────
-function gorusModal(nid){document.getElementById('mg-nid').value=nid;document.getElementById('mg-firma').value='';document.getElementById('mg-icerik').value='';document.getElementById('mg-ozet').value='';document.getElementById('m-gorus').classList.add('on');}
-function gorusKaydet(){
-  const nid=parseInt(document.getElementById('mg-nid').value);
-  const firma=document.getElementById('mg-firma').value.trim();
-  if(!firma){alert('Firma adı zorunludur.');return;}
-  fetch('/api/firma_gorusu',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({NodeID:nid,PlatformID:havuzPID,FirmaAdi:firma,GorusIcerik:document.getElementById('mg-icerik').value,GorusOzet:document.getElementById('mg-ozet').value,GorusKategori:document.getElementById('mg-ozet').value})})
-  .then(()=>{mc('m-gorus');yukle();});
-}
 function yanitKaydet(gid,nid){
   const inp=document.getElementById(`yr-${gid}`);const v=inp.value.trim();if(!v)return;
   fetch(`/api/firma_gorusu/${gid}/yanit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({YanitIcerik:v})})
